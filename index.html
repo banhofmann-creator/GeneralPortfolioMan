@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Depot</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#b8f5d0">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* VOICE: ruhig, sachlich, wie die Finanzseite einer guten Zeitung
+   IDEA: ein Depotauszug mit Zielmarke: wo stehe ich, wo will ich hin
+   PICTURE: großer Branchenbalken des Risikodepots
+   COLOUR and TYPE: Schwarz/Weiß plus Mint-Feld; Space Grotesk 700 + Inter
+   LAYOUT: Hälfte Mint mit Zahl, Hälfte weiß mit Balken; darunter Vorschläge, Positionen, Sichten */
+:root{color-scheme:light dark;--bg:light-dark(#fff,#0b0c0c);--ink:light-dark(#0b0c0c,#f2f4f3);--mut:light-dark(#5d6461,#9aa39f);--line:light-dark(#e3e6e4,#262a28);--mint:#b8f5d0;--field:light-dark(#b8f5d0,#0b0c0c);--fieldink:light-dark(#0b0c0c,#b8f5d0);--c1:light-dark(#0b0c0c,#b8f5d0);--c2:light-dark(#6f7a75,#6f8f80);--c3:light-dark(#c9cfcc,#3b4440);--c4:light-dark(#fff,#0b0c0c);--neg:light-dark(#b3261e,#ff8a80);--pos:light-dark(#0b6b3a,#b8f5d0)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3,.num{font-family:"Space Grotesk",Inter,sans-serif}
+h1{font-size:clamp(32px,4.4vw,48px);line-height:1.05;margin:0 0 14px;text-wrap:balance;font-weight:700}
+h2{font-size:24px;line-height:1.15;margin:0 0 16px;font-weight:700;text-wrap:balance}
+h3{font-size:17px;margin:0 0 4px;font-weight:700}
+p{margin:0 0 10px;max-width:70ch}
+.band{padding:clamp(28px,4vw,64px) max(5vw,16px)}
+.wrap{max-width:1240px;margin:0 auto}
+.mut{color:var(--mut)}.small{font-size:13px}
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);min-height:420px}
+.hero .field{background:var(--field);color:var(--fieldink);padding:clamp(28px,4vw,64px) max(5vw,16px);display:flex;flex-direction:column;justify-content:space-between;gap:24px}
+:root[data-theme=dark] .hero .field,.dk .hero .field{border-right:1px solid var(--line)}
+.hero .chart{padding:clamp(28px,4vw,64px) max(5vw,16px);display:flex;flex-direction:column;justify-content:center;gap:18px}
+.big{font-size:clamp(44px,6vw,76px);line-height:1;font-weight:700;white-space:nowrap}
+.kv{display:flex;flex-wrap:wrap;gap:10px 28px}.kv div{white-space:nowrap}.kv b{display:block;font:700 22px/1.2 "Space Grotesk",sans-serif}
+.stackbar{display:flex;height:64px;border:1.5px solid var(--ink);position:relative}
+.stackbar span{display:block;height:100%;border-right:1.5px solid var(--ink)}.stackbar span:last-child{border-right:0}
+.zone{position:absolute;top:-10px;bottom:-10px;border-left:2px dashed var(--ink);border-right:2px dashed var(--ink);pointer-events:none}
+.zl{position:relative;height:22px;font-size:13px}.zl span{position:absolute;transform:translateX(-50%);white-space:nowrap}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:14px}.legend i{display:inline-block;width:12px;height:12px;border:1.5px solid var(--ink);margin-right:6px;vertical-align:-1px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px 36px}
+.card{border-top:2px solid var(--ink);padding-top:12px}
+.lead{font-size:19px;font-weight:500;max-width:62ch;margin-bottom:22px}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th{font-weight:600;text-align:left;font-size:13px;color:var(--mut);border-bottom:2px solid var(--ink);padding:8px 8px}
+td{border-bottom:1px solid var(--line);padding:10px 8px;vertical-align:top}
+td.r,th.r{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.w{display:flex;align-items:center;gap:8px;justify-content:flex-end}.w i{display:block;height:8px;background:var(--c1);min-width:2px}
+.neg{color:var(--neg)}.pos{color:var(--pos)}
+.tag{font-size:12px;border:1px solid var(--ink);padding:1px 7px;border-radius:99px;white-space:nowrap}
+.bars .row{display:grid;grid-template-columns:8.5em minmax(0,1fr) 3.4em;gap:10px;align-items:center;margin:7px 0;font-size:14px}
+.bars .t{height:14px;background:var(--line)}.bars .t i{display:block;height:100%;background:var(--c1)}
+.bars .row b{text-align:right;font-variant-numeric:tabular-nums}
+.fig{position:relative;min-height:240px}.fig>svg{position:absolute;inset:0;width:100%;height:100%}
+.calc{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+input{font:16px Inter,sans-serif;height:44px;padding:0 12px;border:1.5px solid var(--ink);background:var(--bg);color:var(--ink);width:10em}
+input:focus-visible,summary:focus-visible{outline:3px solid var(--mint);outline-offset:2px}
+.out{font:700 22px "Space Grotesk",sans-serif}
+.alt{background:light-dark(#f4f6f5,#121514)}
+details summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:600}
+pre,.scroll{overflow-x:auto}code{overflow-wrap:anywhere}
+.buy{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.buy button,.lock button{font:600 14px Inter,sans-serif;min-height:40px;padding:0 14px;border:1.5px solid var(--ink);background:var(--bg);color:var(--ink);border-radius:99px;cursor:pointer}
+.buy button::before{content:"Kaufen · "}
+.buy button:active{background:var(--mint);color:#0b0c0c}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:12px;font-size:15px;max-width:92vw;z-index:9;display:none}
+.lock{position:fixed;inset:0;background:var(--field);color:var(--fieldink);display:flex;flex-direction:column;justify-content:center;gap:14px;padding:32px;z-index:8}
+.lock input{width:100%;max-width:22em}
+.lock[hidden]{display:none}
+@media(max-width:820px){.hero{grid-template-columns:1fr}}
+@media(max-width:600px){table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding-block:10px;border-bottom:1px solid var(--line)}.stack td{display:flow-root;border:0;padding:3px 0;padding-inline-start:8em;text-align:start}.stack td::before{content:attr(data-l);float:inline-start;width:7.5em;margin-inline-start:-8em;white-space:normal;color:var(--mut)}.stack td:empty{display:none}.stack .w{justify-content:flex-start}.bars .row{grid-template-columns:6.5em minmax(0,1fr) 3.2em}}
+</style><script>new MutationObserver(()=>{for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i+=p.colSpan;c.dataset.l=c.closest('table').rows[0].cells[i]?.textContent||''}}).observe(document,{childList:true,subtree:true})</script></head>
+<body>
+<div class="lock" id="lock" hidden><h1>Depot</h1><p>Passwort einmal eingeben. Es bleibt nur auf diesem Gerät gespeichert.</p><form id="lockf" style="display:flex;flex-direction:column;gap:12px"><input id="pw" type="password" autocomplete="current-password" aria-label="Passwort"><button type="submit">Entsperren</button></form><p id="lockmsg" class="small"></p></div>
+<div id="toast" role="status"></div>
+<section class="hero">
+  <div class="field">
+    <div>
+      <p class="small" id="stand"></p>
+      <h1 id="headline">Depot</h1>
+    </div>
+    <div>
+      <div class="small">Gesamtwert inkl. Liquidität</div>
+      <div class="big num" id="total"></div>
+      <div class="kv" style="margin-top:18px">
+        <div><span class="small">Wertpapiere</span><b id="sec"></b></div>
+        <div><span class="small">Liquidität</span><b id="cash"></b></div>
+        <div><span class="small">Letzte Kursänderung</span><b id="day"></b></div>
+      </div>
+    </div>
+  </div>
+  <div class="chart">
+    <h2>Wo dein Geld arbeitet</h2>
+    <p class="mut">Branchen im Depot, ETFs nach ihrem Inhalt aufgeteilt. Weiß = Branchen, die bisher fast fehlen.</p>
+    <div class="stackbar" id="bar"></div>
+    <div class="legend" id="legend"></div>
+    <p id="gap" style="margin-top:6px"></p>
+  </div>
+</section>
+
+<section class="band"><div class="wrap">
+  <h2>Vorschläge heute</h2>
+  <p class="small mut" id="rolle"></p>
+  <p class="lead" id="kurz"></p>
+  <div class="grid2" id="allok"></div>
+</div></section>
+
+<section class="band alt"><div class="wrap">
+  <h2>Positionen</h2>
+  <div class="scroll"><table class="stack" id="pos"></table></div>
+  <p class="small mut" id="quelle" style="margin-top:12px"></p>
+</div></section>
+
+<section class="band"><div class="wrap">
+  <h2>Allokation im Detail</h2>
+  <div class="grid2">
+    <div class="card bars"><h3>Region</h3><div id="reg"></div></div>
+    <div class="card bars"><h3>Währungsrisiko</h3><div id="cur"></div></div>
+    <div class="card bars"><h3>Tech-Anteil und Hebel</h3><div id="tech"></div></div>
+    <div class="card bars"><h3>Kern, Themen, Hebel</h3><div id="bkt"></div><p class="small mut" style="margin-top:10px">Kern-Ziel rechne ich ab Februar über Depot und Familienkonto zusammen.</p></div>
+  </div>
+  <p class="small mut" style="margin-top:16px">Regionen, Währungen und Tech-Anteil der ETFs sind gerundete Näherungen aus den Fonds-Factsheets. Beim Hebel-ETF zählt die Region nach Depotwert; das tatsächliche Marktrisiko ist doppelt so hoch.</p>
+</div></section>
+
+<section class="band alt"><div class="wrap">
+  <h2>Neue Ideen nach Geschäftsmodell</h2>
+  <p class="mut">Einzelaktien aus aller Welt mit kurzem Briefing. Ob dir Technologie und Geschäftsmodell gefallen, fragt dich der Thread; deine Antworten steuern die nächsten Runden. Ideen, keine Kaufempfehlung.</p>
+  <p id="prefs" class="small"></p>
+  <div class="grid2" id="ideen"></div>
+  <h2 style="margin-top:44px">Deine Einzelaktien</h2>
+  <div class="grid2" id="einzel"></div>
+</div></section>
+
+<section class="band"><div class="wrap grid2">
+  <div>
+    <h2>Positionsgröße prüfen</h2>
+    <p class="mut">Wie groß wäre ein neuer Kauf im Depot? Faustregel hier: eine Firma höchstens ~10 %.</p>
+    <div class="calc"><label for="amt">Kaufbetrag in €</label><input id="amt" type="number" min="0" step="100" value="1000" inputmode="numeric"><span>→ Anteil</span><span class="out" id="calcout"></span></div>
+  </div>
+  <div>
+    <h2>Depotwert im Verlauf</h2>
+    <div class="fig"><svg id="hist" role="img" aria-label="Depotwert je Tag"></svg></div>
+  </div>
+</div></section>
+
+<section class="band alt"><div class="wrap">
+  <p><b>Keine Anlageberatung.</b> Die Vorschläge beruhen auf deinen Angaben (Altersvorsorge, Kern plus Themen, möglichst kein Währungsrisiko) und öffentlich verfügbaren Kursen. Kurse können verzögert sein; vor jedem Kauf beim Broker prüfen.</p>
+  <p class="mut">Aktualisierung: werktags morgens automatisch. Käufe und Verkäufe einfach im Thread schreiben („10 Stück X gekauft“), dann passe ich den Bestand an.</p>
+</div></section>
+
+<script>
+function render(D){
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+const eur=(v,d=0)=>v.toLocaleString('de-DE',{minimumFractionDigits:d,maximumFractionDigits:d})+' €';
+const pct=(v,d=0)=>v.toLocaleString('de-DE',{maximumFractionDigits:d,minimumFractionDigits:d})+' %';
+const $=id=>document.getElementById(id);
+const buy=i=>i&&/^[A-Z]{2}[A-Z0-9]{9}[0-9]$/.test(i)?`<span class="buy"><button type="button" data-bank="consors" data-isin="${esc(i)}">Consors</button><button type="button" data-bank="ing" data-isin="${esc(i)}">ING</button></span>`:'';
+const P=D.positionen.map(p=>({...p,wert:p.stk*p.kurs}));
+const sec=P.reduce((a,p)=>a+p.wert,0),tot=sec+D.cash;
+const day=P.reduce((a,p)=>a+(p.wert-p.wert/(1+p.chg/100)),0);
+const B={Kern:0,Themen:0,Hebel:0};P.forEach(p=>B[p.bucket]+=p.wert);
+const agg=key=>{const m={};P.forEach(p=>{for(const [k,v] of Object.entries(p[key]))m[k]=(m[k]||0)+p.wert*v/100});return Object.entries(m).sort((a,b)=>b[1]-a[1])};
+const V=D.vorschlaege;
+const st=new Date(D.stand);
+$('stand').textContent='Stand '+st.toLocaleString('de-DE',{weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit',timeZone:'Europe/Berlin'})+' Uhr';
+$('headline').textContent=V.titel;
+$('total').textContent=eur(tot);$('sec').textContent=eur(sec);$('cash').textContent=eur(D.cash);
+$('day').textContent=(day>=0?'+':'−')+eur(Math.abs(day));
+const BR=agg('branche');
+const shades=['var(--c1)','#3f4744','var(--c2)','#9aa49f','var(--c3)'];
+const col=(i,v)=>v/sec<0.08?'var(--c4)':shades[Math.min(i,4)];
+$('bar').innerHTML=BR.map(([k,v],i)=>`<span style="width:${v/sec*100}%;background:${col(i,v)}" title="${esc(k)}"></span>`).join('');
+$('legend').innerHTML=BR.map(([k,v],i)=>`<span><i style="background:${col(i,v)}"></i>${esc(k)} ${pct(v/sec*100)}</span>`).join('');
+const low=BR.filter(([k,v])=>v/sec<0.08&&k!=='Sonstige').map(([k])=>k);
+$('gap').innerHTML=low.length?`Kaum vertreten: <b>${low.map(esc).join(', ')}</b>.`:'';
+$('rolle').textContent=D.depot_rolle||'';
+$('kurz').textContent=D.vorschlaege.kurz;
+$('allok').innerHTML=V.allokation.map(a=>`<div class="card"><h3>${esc(a.titel)}</h3><p>${esc(a.text)}</p></div>`).join('');
+const chg=c=>`<span class="${c<0?'neg':'pos'}">${c>0?'+':c<0?'−':''}${pct(Math.abs(c),1)}</span>`;
+const maxW=Math.max(...P.map(p=>p.wert));
+$('pos').innerHTML='<thead><tr><th>Wertpapier</th><th>Typ</th><th class="r">Stück</th><th class="r">Kurs</th><th class="r">Änderung</th><th class="r">Wert</th><th class="r">Anteil</th></tr></thead><tbody>'+
+ [...P].sort((a,b)=>b.wert-a.wert).map(p=>`<tr><td><b>${esc(p.name)}</b><br><span class="small mut">${esc(p.isin)}${p.wkn&&p.wkn!=='–'?' · '+esc(p.wkn):''} · Kurs ${esc(p.kurs_zeit)}</span>${buy(p.isin)}</td><td><span class="tag">${esc(p.bucket)}</span> <span class="small">${esc(p.art)}</span></td><td class="r">${p.stk}</td><td class="r">${eur(p.kurs,2)}</td><td class="r">${chg(p.chg)}</td><td class="r">${eur(p.wert)}</td><td class="r"><div class="w"><i style="width:${p.wert/maxW*70}px"></i>${pct(p.wert/sec*100,1)}</div></td></tr>`).join('')+
+ `<tr><td><b>Liquidität</b><br><span class="small mut">Reserve, bewusst nicht investiert</span></td><td></td><td class="r"></td><td class="r"></td><td class="r"></td><td class="r">${eur(D.cash)}</td><td class="r"></td></tr></tbody>`;
+$('quelle').textContent='Quelle: '+D.quelle+'. Anteile beziehen sich auf die Wertpapiere ohne Liquidität.';
+const bars=rows=>rows.map(([k,v])=>`<div class="row"><span>${esc(k)}</span><div class="t"><i style="width:${Math.min(100,v)}%"></i></div><b>${pct(v)}</b></div>`).join('');
+$('reg').innerHTML=bars(agg('region').map(([k,v])=>[k,v/sec*100]));
+$('cur').innerHTML=bars(agg('waehrung').map(([k,v])=>[k,v/sec*100]));
+const techV=P.reduce((a,p)=>a+p.wert*p.tech/100,0);
+const expo=P.reduce((a,p)=>a+p.wert*(p.hebel||1),0);
+$('tech').innerHTML=bars([['Tech/KI',techV/sec*100],['Einzelaktien',P.filter(p=>p.art==='Aktie').reduce((a,p)=>a+p.wert,0)/sec*100]])+
+ `<p class="small" style="margin-top:12px">Marktrisiko inkl. Hebel: <b>${pct(expo/sec*100)}</b> des Wertpapierdepots (${eur(expo)}).</p>`;
+$('bkt').innerHTML=bars(Object.entries(B).map(([k,v])=>[k,v/sec*100]));
+$('einzel').innerHTML=V.einzelaktien.map(a=>`<div class="card"><h3>${esc(a.name)} <span class="tag">${esc(a.branche)}</span></h3><p class="small mut">${esc(a.modell)}</p><p>${esc(a.text)}</p></div>`).join('');
+const stLbl={offen:'Frage offen',mag:'Gefällt dir',mag_nicht:'Gefällt dir nicht',mehr:'Mehr Infos gewünscht',spaeter:'Nächste Runde'};
+const pf=D.praeferenzen||{mag:[],mag_nicht:[]};
+$('prefs').innerHTML=(pf.mag.length||pf.mag_nicht.length)?`<b>Dein Profil bisher:</b> gefällt ${esc(pf.mag.join(', ')||'–')} · gefällt nicht ${esc(pf.mag_nicht.join(', ')||'–')}`:'Dein Profil füllt sich mit deinen Antworten.';
+$('ideen').innerHTML=V.ideen.map(w=>`<div class="card"><h3>${esc(w.name)}</h3><p class="small"><span class="tag">${esc(w.typ)}</span> <span class="tag">${esc(w.branche)}</span> <span class="tag">${esc(w.runde>1&&w.status==='offen'?stLbl.spaeter:stLbl[w.status]||w.status)}</span></p><p class="small mut">${esc(w.isin)} · ${eur(w.kurs,2)} ${chg(w.chg)}</p>${buy(w.isin)}<p><b>Geschäftsmodell:</b> ${esc(w.modell)}</p><p><b>Warum es passt:</b> ${esc(w.warum)}</p><p><b>Hauptrisiko:</b> ${esc(w.risiko)}</p></div>`).join('');
+const calc=()=>{const x=Math.max(0,+$('amt').value||0);$('calcout').textContent=pct(x/(sec+x)*100,1)};
+$('amt').addEventListener('input',calc);calc();
+const s=$('hist');
+const draw=()=>{const W=s.clientWidth,H=s.clientHeight,V=D.verlauf;if(!W)return;
+ if(V.length<2){s.innerHTML=`<text x="${W/2}" y="${H/2}" text-anchor="middle" fill="currentColor" font-size="14">Ab dem nächsten Morgen wächst hier die Kurve (heute ${eur(V[0]?.wert||tot)}).</text>`;return}
+ const pl=W<520?8:64,pr=12,pt=14,pb=26,vs=V.map(v=>v.wert),mn=Math.min(...vs)*0.98,mx=Math.max(...vs)*1.02;
+ const x=i=>pl+(W-pl-pr)*i/(V.length-1),y=v=>pt+(H-pt-pb)*(1-(v-mn)/(mx-mn));
+ const ticks=[mn,(mn+mx)/2,mx];
+ s.innerHTML=(W<520?'':ticks.map(t=>`<line x1="${pl}" x2="${W-pr}" y1="${y(t)}" y2="${y(t)}" stroke="var(--line)"/><text x="${pl-8}" y="${y(t)+4}" text-anchor="end" font-size="12" fill="var(--mut)">${Math.round(t/1000)}k</text>`).join(''))+
+ `<path d="${V.map((v,i)=>(i?'L':'M')+x(i)+','+y(v.wert)).join('')}" fill="none" stroke="currentColor" stroke-width="2.5"/>`+
+ `<circle cx="${x(V.length-1)}" cy="${y(vs.at(-1))}" r="4.5" fill="var(--mint)" stroke="currentColor" stroke-width="2"/>`+
+ `<text x="${pl}" y="${H-6}" font-size="12" fill="var(--mut)">${esc(V[0].datum)}</text><text x="${W-pr}" y="${H-6}" font-size="12" text-anchor="end" fill="var(--mut)">${esc(V.at(-1).datum)}</text>`};
+const ro=new ResizeObserver(draw);ro.observe(s);
+}
+</script>
+<script src="app.js"></script>
+</body>
+</html>
